@@ -638,7 +638,7 @@ main { outline: none; min-height: 60vh; }
 </nav>
 
 <script>
-// NewYork_v1.2 일정 데이터 — v1.1(엑셀 NewYork_v1.1.xlsx)에 가족 피드백(전망대·크루즈·오픈티켓·$30 이하 식당) 반영. 일정 수정은 이 파일만 고치면 됩니다.
+// NewYork_v1.3 일정 데이터 — v1.2에 빅패스 6(3인)·라이온킹(11/15)·징퐁 딤섬(엄마 리퀘스트) 반영. 일정 수정은 이 파일만 고치면 됩니다.
 window.TRIP = {
   "meta": {
     "title": "엄마의 환갑, 뉴욕에서",
@@ -648,7 +648,7 @@ window.TRIP = {
     "departureKST": "2026-11-13T08:25:00+09:00",
     "tripStartNY": "2026-11-13",
     "tripEndNY": "2026-11-21",
-    "version": "NewYork_v1.2 (일정 v3.3 · 가족 피드백 반영)"
+    "version": "NewYork_v1.3 (빅패스 · 라이온킹 · 징퐁 반영)"
   },
   "hotel": {
     "name": "Courtyard by Marriott New York Manhattan/Times Square West",
@@ -732,9 +732,9 @@ window.TRIP = {
       "date": "11/15 (일)",
       "morning": "베슬 → 하이라인",
       "lunch": "첼시마켓",
-      "afternoon": "리틀 아일랜드\n웨스트빌리지 · 소호",
-      "evening": "치폴레 / 버거",
-      "mustTimes": ""
+      "afternoon": "리틀 아일랜드\n웨스트빌리지 → 호텔 휴식",
+      "evening": "이른 저녁\n라이온킹 18:30",
+      "mustTimes": "18:00 극장 도착\n18:30 라이온킹"
     },
     {
       "day": "D4",
@@ -749,8 +749,8 @@ window.TRIP = {
       "day": "D5",
       "date": "11/17 (화)",
       "morning": "원월드 전망대\n9/11 메모리얼",
-      "lunch": "이탈리 다운타운",
-      "afternoon": "월스트리트 · 시포트\n여신상 트와일라잇 크루즈",
+      "lunch": "징퐁 딤섬 (차이나타운)",
+      "afternoon": "월스트리트 · 배터리파크\n여신상 트와일라잇 크루즈",
       "evening": "북창동순두부\n일찍 취침",
       "mustTimes": "09:30 원월드\n16:00 크루즈 (부두 확인)"
     },
@@ -872,7 +872,7 @@ window.TRIP = {
           "what": "Top of the Rock 전망대",
           "where": "30 Rockefeller Plaza",
           "how": "",
-          "memo": "예약 15:30 · 일몰 16:40경 → 낮 풍경·노을·야경을 한 번에 / 15분 전 도착",
+          "memo": "빅패스 · 예약 15:30 · 일몰 16:40경 → 낮 풍경·노을·야경을 한 번에 / 15분 전 도착",
           "kind": "must",
           "photo": "topoftherock"
         },
@@ -931,7 +931,7 @@ window.TRIP = {
           "what": "자연사박물관",
           "where": "200 Central Park West",
           "how": "",
-          "memo": "오픈티켓(날짜 미지정) 사용 · 공룡관 · 대왕고래 · 로즈센터 / 약 3시간 반",
+          "memo": "빅패스(오픈티켓) · 공룡관 · 대왕고래 · 로즈센터 / 약 3시간 반",
           "kind": "art",
           "photo": "amnh"
         },
@@ -958,7 +958,7 @@ window.TRIP = {
           "what": "메트로폴리탄 미술관",
           "where": "1000 5th Ave",
           "how": "",
-          "memo": "토요일은 밤 9시까지 / 이집트관 · 유럽회화 · 옥상",
+          "memo": "빅패스 (시간 자유) · 토요일은 밤 9시까지 / 이집트관 · 유럽회화 · 옥상",
           "kind": "art",
           "photo": "met"
         },
@@ -976,7 +976,7 @@ window.TRIP = {
     {
       "day": "D3",
       "date": "11/15 (일)",
-      "theme": "베슬 → 하이라인 → 첼시마켓 → 소호",
+      "theme": "베슬 → 하이라인 → 첼시마켓 → 라이온킹",
       "photo": "highline",
       "weather": {
         "date": "2026-11-15",
@@ -1022,29 +1022,56 @@ window.TRIP = {
           "photo": "littleisland"
         },
         {
-          "time": "14:00",
-          "what": "웨스트빌리지 → 워싱턴스퀘어파크 → 소호 쇼핑",
-          "where": "Bleecker St → Broadway",
+          "time": "13:45",
+          "what": "웨스트빌리지 → 워싱턴스퀘어파크",
+          "where": "Bleecker St → Washington Sq",
           "how": "도보",
-          "memo": "거리 걷기 · 카페 휴식",
+          "memo": "거리 걷기 · 카페 휴식 (소호 쇼핑은 D9로) / 15:45엔 출발",
           "kind": "normal",
           "photo": "washingtonsq"
         },
         {
-          "time": "18:00",
-          "what": "저녁 · 조스 피자 원조 / 프린스 스트리트 피자",
-          "where": "7 Carmine St / 27 Prince St",
-          "how": "",
-          "memo": "치폴레도 가능 · 칙필레는 일요일 휴무",
-          "kind": "food",
-          "photo": "pizza"
+          "time": "16:00",
+          "what": "호텔에서 쉬기 · 옷 갈아입기",
+          "where": "호텔",
+          "how": "지하철 A·C·E (W 4 St → 34 St–Penn) 약 15분",
+          "memo": "공연 전에 다리 쉬기",
+          "kind": "normal",
+          "photo": null
         },
         {
-          "time": "19:15",
+          "time": "17:00",
+          "what": "이른 저녁 · 쉐이크쉑 시어터 디스트릭트 / 조스 피자",
+          "where": "8th Ave · Broadway (극장 근처)",
+          "how": "도보 10분",
+          "memo": "공연이 약 2시간 반 → 미리 든든하게",
+          "kind": "food",
+          "photo": "burger"
+        },
+        {
+          "time": "18:00",
+          "what": "민스코프 극장 도착",
+          "where": "Minskoff Theatre · 1515 Broadway (W 45th St)",
+          "how": "도보",
+          "memo": "예약 18:30 · 30분 전 도착 (가방 검사) / 늦으면 입장이 제한될 수 있음",
+          "kind": "must",
+          "photo": null
+        },
+        {
+          "time": "18:30",
+          "what": "라이온킹 (브로드웨이 뮤지컬)",
+          "where": "Minskoff Theatre",
+          "how": "",
+          "memo": "약 2시간 반 (인터미션 포함) · 공연 중 촬영 금지",
+          "kind": "must",
+          "photo": "broadway"
+        },
+        {
+          "time": "21:00",
           "what": "숙소 복귀",
-          "where": "",
-          "how": "지하철 C·E",
-          "memo": "",
+          "where": "호텔",
+          "how": "도보 12분",
+          "memo": "타임스스퀘어 야경 보며 걷기",
           "kind": "normal",
           "photo": null
         }
@@ -1175,7 +1202,7 @@ window.TRIP = {
     {
       "day": "D5",
       "date": "11/17 (화)",
-      "theme": "원월드 전망대 → 9/11 → 여신상 트와일라잇 크루즈 → 북창동순두부",
+      "theme": "원월드 전망대 → 9/11 → 징퐁 딤섬 → 여신상 트와일라잇 크루즈 → 북창동순두부",
       "photo": "oneworld",
       "weather": {
         "date": "2026-11-17",
@@ -1198,7 +1225,7 @@ window.TRIP = {
           "what": "원월드 전망대 (One World Observatory)",
           "where": "117 West St",
           "how": "",
-          "memo": "예약 09:30 · 공항식 보안검색 → 15분 전 도착 / 102층 · 약 1시간 반",
+          "memo": "빅패스 · 예약 09:30 · 공항식 보안검색 → 15분 전 도착 / 102층 · 약 1시간 반",
           "kind": "must",
           "photo": "oneworld"
         },
@@ -1207,32 +1234,41 @@ window.TRIP = {
           "what": "9/11 메모리얼 · 오큘러스",
           "where": "180 Greenwich St",
           "how": "도보",
-          "memo": "야외 메모리얼 무료",
+          "memo": "야외 메모리얼 무료 · 약 40분",
           "kind": "normal",
           "photo": "911"
         },
         {
-          "time": "12:00",
-          "what": "점심 · 이탈리 다운타운 / 허드슨 이츠",
-          "where": "101 Liberty St (4 WTC 3층)",
-          "how": "도보 3분",
-          "memo": "이탈리 파스타 1인 $25~30 · 가볍게는 브룩필드 허드슨 이츠",
-          "kind": "food",
-          "photo": "pasta"
+          "time": "11:45",
+          "what": "차이나타운으로",
+          "where": "→ Canal St 역",
+          "how": "지하철 R·W (Cortlandt St) 약 10분 / 도보 20분",
+          "memo": "",
+          "kind": "normal",
+          "photo": null
         },
         {
-          "time": "13:15",
+          "time": "12:15",
+          "what": "점심 · 징퐁 딤섬 (이서진의 뉴욕뉴욕)",
+          "where": "202 Centre St (차이나타운)",
+          "how": "",
+          "memo": "엄마 리퀘스트! 하가우 · 슈마이 · 창펀 / 딤섬은 오후 3시 전이 좋아요 · 방송 속 엘리자베스 St 홀은 문 닫고 이곳으로 이전",
+          "kind": "food",
+          "photo": "dumpling"
+        },
+        {
+          "time": "13:30",
           "what": "월스트리트 · 황소상 · 볼링그린",
           "where": "Wall St · Bowling Green",
-          "how": "도보 10분",
+          "how": "지하철 4·5 (Brooklyn Bridge–City Hall → Wall St) 약 10분",
           "memo": "",
           "kind": "normal",
           "photo": "wallst"
         },
         {
-          "time": "14:00",
-          "what": "배터리파크 · 사우스스트리트 시포트 카페 휴식",
-          "where": "Battery Park → Pier 17",
+          "time": "14:15",
+          "what": "배터리파크 · 카페 휴식",
+          "where": "Battery Park",
           "how": "도보",
           "memo": "크루즈 전 카페에서 몸 녹이기 · 다리 쉬기",
           "kind": "normal",
@@ -1252,7 +1288,7 @@ window.TRIP = {
           "what": "자유의 여신상 트와일라잇 크루즈",
           "where": "뉴욕항 · 리버티섬 앞",
           "how": "크루즈",
-          "memo": "예약 16:00 · 일몰 16:40경 → 노을 속 여신상 → 맨해튼 야경 / 갑판 바람 매우 차가움 (모자·장갑)",
+          "memo": "빅패스 · 예약 16:00 · 일몰 16:40경 → 노을 속 여신상 → 맨해튼 야경 / 갑판 바람 매우 차가움 (모자·장갑)",
           "kind": "must",
           "photo": "liberty"
         },
@@ -1451,7 +1487,7 @@ window.TRIP = {
           "what": "MoMA ① 5층부터",
           "where": "11 W 53rd St",
           "how": "",
-          "memo": "오픈티켓(날짜 미지정) 사용 · 고흐 별이 빛나는 밤 · 모네 · 피카소 · 마티스",
+          "memo": "빅패스(오픈티켓) · 고흐 별이 빛나는 밤 · 모네 · 피카소 · 마티스",
           "kind": "art",
           "photo": "starrynight"
         },
@@ -1650,7 +1686,7 @@ window.TRIP = {
           "what": "마지막 쇼핑 · 메이시스 / 허드슨야드 몰",
           "where": "34th St 일대",
           "how": "도보",
-          "memo": "토요일 혼잡",
+          "memo": "토요일 혼잡 · 소호에 못 갔으면 여기서 (지하철 20분)",
           "kind": "normal",
           "photo": "macys"
         },
@@ -1697,7 +1733,7 @@ window.TRIP = {
     {
       "name": "MoMA 뉴욕 현대미술관",
       "type": "미술관",
-      "date": "11/19 목 · 오픈티켓",
+      "date": "11/19 목 · 빅패스(오픈)",
       "desc": "고흐 '별이 빛나는 밤', 모네 '수련' — 하루 종일",
       "address": "11 W 53rd St",
       "photo": "moma"
@@ -1705,7 +1741,7 @@ window.TRIP = {
     {
       "name": "메트로폴리탄 미술관",
       "type": "미술관",
-      "date": "11/14 토",
+      "date": "11/14 토 · 빅패스(시간 자유)",
       "desc": "이집트관 · 유럽회화 · 옥상 정원 / 토요일 밤 9시까지",
       "address": "1000 5th Ave",
       "photo": "met"
@@ -1713,7 +1749,7 @@ window.TRIP = {
     {
       "name": "자연사박물관",
       "type": "박물관",
-      "date": "11/14 토 · 오픈티켓",
+      "date": "11/14 토 · 빅패스(오픈)",
       "desc": "공룡 화석 · 대왕고래 · 로즈센터",
       "address": "200 Central Park West",
       "photo": "amnh"
@@ -1721,7 +1757,7 @@ window.TRIP = {
     {
       "name": "자유의 여신상 트와일라잇 크루즈",
       "type": "크루즈",
-      "date": "11/17 화 16:00",
+      "date": "11/17 화 16:00 · 빅패스",
       "desc": "노을 속 여신상 → 맨해튼 야경, 약 1시간 반",
       "address": "출발 부두 티켓 확인",
       "photo": "liberty"
@@ -1729,7 +1765,7 @@ window.TRIP = {
     {
       "name": "Top of the Rock",
       "type": "전망대",
-      "date": "11/13 금 15:30",
+      "date": "11/13 금 15:30 · 빅패스",
       "desc": "엠파이어 + 센트럴파크, 일몰 직전 입장",
       "address": "30 Rockefeller Plaza",
       "photo": "topoftherock"
@@ -1737,10 +1773,18 @@ window.TRIP = {
     {
       "name": "원월드 전망대",
       "type": "전망대",
-      "date": "11/17 화 09:30",
+      "date": "11/17 화 09:30 · 빅패스",
       "desc": "세계무역센터 102층, 아침 햇살의 맨해튼·자유의 여신상",
       "address": "117 West St",
       "photo": "oneworld"
+    },
+    {
+      "name": "라이온킹 (브로드웨이 뮤지컬)",
+      "type": "뮤지컬",
+      "date": "11/15 일 18:30",
+      "desc": "민스코프 극장 · 약 2시간 반 (인터미션 포함)",
+      "address": "1515 Broadway (W 45th St)",
+      "photo": "broadway"
     },
     {
       "name": "하이라인",
@@ -1801,6 +1845,18 @@ window.TRIP = {
       "address": "5 W 32nd St (코리아타운) · 호텔 도보 12분",
       "kind": "korean",
       "photo": "sundubu",
+      "tier": "meal",
+      "pick": "엄마 리퀘스트"
+    },
+    {
+      "days": "D5",
+      "area": "차이나타운",
+      "name": "징퐁 (Jing Fong) · 이서진의 뉴욕뉴욕 딤섬",
+      "menu": "카트 딤섬 · 하가우 · 슈마이 · 창펀",
+      "priceUSD": "$20~30 (예상)",
+      "address": "202 Centre St · 딤섬은 오후 3시 전 · 주말은 11:30 전 도착",
+      "kind": "dumpling",
+      "photo": "dumpling",
       "tier": "meal",
       "pick": "엄마 리퀘스트"
     },
@@ -2181,6 +2237,14 @@ window.TRIP = {
   ],
   "cautions": [
     {
+      "title": "빅패스 (3인 · $570)",
+      "text": "MoMA · Top of the Rock · 여신상 트와일라잇 크루즈 · 원월드 · 자연사박물관 · 메트 6곳. 바우처를 폰에 미리 저장 · ToR 11/13 15:30 · 원월드 11/17 09:30 · 크루즈 11/17 16:00은 예약 시간대로, MoMA · 자연사 · 메트는 시간 자유"
+    },
+    {
+      "title": "라이온킹",
+      "text": "11/15(일) 18:30 · 민스코프 극장 (1515 Broadway, W 45th St) · 30분 전 도착 · 공연 중 사진·영상 촬영 금지"
+    },
+    {
       "title": "농구장 가방",
       "text": "백팩 반입 불가. 10×6×2인치(약 25×15×5cm) 이하 작은 가방만. 보관소 없음 → 경기날은 백팩 호텔에 두기"
     },
@@ -2230,13 +2294,14 @@ window.TRIP = {
       "group": "지금 예약할 것",
       "items": [
         "갤러거스 11/19 19:30 3명 (60th birthday 메모)",
-        "메트로폴리탄 미술관 11/14 온라인 구매",
         "트와일라잇 크루즈 출발 부두 확인 (티켓)"
       ]
     },
     {
       "group": "출발 전 확인",
       "items": [
+        "라이온킹 11/15 18:30 티켓 (Minskoff Theatre)",
+        "빅패스 바우처 폰에 저장 (3인)",
         "ESTA 3명 유효 여부",
         "JFK 귀국 터미널 (T1 / New Terminal One)",
         "각자 컨택리스 카드 · 페이",
@@ -2254,11 +2319,10 @@ window.TRIP = {
         "보스턴 Amtrak 왕복 3석",
         "농구 11/16 76ers vs Nets (티켓 수령)",
         "농구 11/20 Magic vs Nets (티켓 수령)",
+        "빅패스 6 · 성인 3 ($570) — MoMA · ToR · 여신상 크루즈 · 원월드 · 자연사 · 메트",
         "Top of the Rock 11/13 15:30",
         "원월드 전망대 11/17 09:30",
-        "자유의 여신상 트와일라잇 크루즈 11/17 16:00",
-        "MoMA 오픈티켓 (날짜 미지정)",
-        "자연사박물관 오픈티켓 (날짜 미지정)"
+        "자유의 여신상 트와일라잇 크루즈 11/17 16:00"
       ]
     }
   ],
@@ -2269,10 +2333,9 @@ window.TRIP = {
     "estimatesUSD_3people": {
       "교통": 381.6,
       "식비": 1851,
-      "관광": 679.5,
       "기타": 391.86
     },
-    "note": "항공·숙소·농구·기차는 이미 결제. 위 금액은 앞으로 쓸 돈 추정치"
+    "note": "항공·숙소·농구·기차·빅패스($570, 관광 6곳)는 이미 결제. 위 금액은 앞으로 쓸 돈 추정치 (라이온킹 제외)"
   },
   "weatherDays": [
     {
