@@ -698,6 +698,39 @@ button.maplink { border: 0; cursor: pointer; font: inherit; }
 .src .ss { display: block; font-size: 12px; font-weight: 500; color: var(--muted); }
 .src .hi { color: var(--red); }
 .src .lo { color: var(--blue); }
+
+/* ===== v1.5 시간별 날씨 ===== */
+.wx .fold-hr { border: 2px solid var(--sky); }
+.wx .fold-hr > summary { color: var(--blue); }
+.wx .fold-hr .fold-body { padding: 10px 8px 12px; }
+.wx-mtabs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; margin-bottom: 10px; }
+.wxm { min-height: 44px; padding: 6px 2px; letter-spacing: -.02em; border-radius: 10px; border: 2px solid var(--sign); background: var(--surface); color: var(--ink);
+  font: 800 14px/1.1 var(--font); cursor: pointer; white-space: nowrap; box-shadow: 0 2px 0 var(--sign); }
+.wxm[aria-pressed="true"] { background: var(--yellow); color: #1A1A1A; }
+.wx-hr-scroll { overflow-x: auto; max-height: 70vh; overflow-y: auto; border: 1px solid var(--line); border-radius: 10px; }
+.wx-hr table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 16px; }
+.wx-hr thead th { position: sticky; top: 0; z-index: 1; background: var(--surface); font-size: 13px; font-weight: 700; color: var(--muted); padding: 8px 2px; border-bottom: 1px solid var(--line); }
+.wx-hr thead th small { display: block; font-size: 11px; font-weight: 500; }
+.wx-hr thead th:first-child { width: 56px; text-align: left; padding-left: 10px; }
+.wx-hr tbody th { text-align: left; padding: 0 0 0 10px; font-weight: 800; white-space: nowrap; }
+.wx-hr td { text-align: center; padding: 0; font-weight: 700; }
+.wx-hr td.comp { background: var(--bg-2); }
+.wx-hr tbody tr { border-bottom: 1px solid var(--line); }
+.wx-hr tbody tr.now { background: #FFF1C2; }
+.wx-hr tbody tr.now td.comp { background: #FBE6A0; }
+.wx-hr .v { display: none; }
+.wx-hr.m-pop .v-pop, .wx-hr.m-rain .v-rain, .wx-hr.m-t .v-t, .wx-hr.m-sky .v-sky { display: block; }
+.wx-hr td .v { padding: 10px 2px; min-height: 44px; }
+.wx-hr td .v-sky { padding: 4px 2px; }
+.wx-hr td .v-sky svg { width: 24px; height: 24px; display: block; margin: 0 auto; }
+.wx-hr td .v-sky small { display: block; font-size: 11px; font-weight: 600; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.wx-hr-note { margin-top: 8px; }
+.wx-icon-moon { color: #E8A100; }
+@media (prefers-color-scheme: dark) {
+  .wx-hr tbody tr.now { background: #3A3418; }
+  .wx-hr tbody tr.now td.comp { background: #4A421C; }
+  .wxm { border-color: var(--line); box-shadow: 0 2px 0 var(--line); }
+}
 </style>
 </head>
 <body>
@@ -6633,13 +6666,11 @@ window.TRIP = {
   },
   "weatherSources": {
     "뉴욕": {
-      "accu": "https://www.accuweather.com/en/us/new-york/10021/daily-weather-forecast/349727",
       "yr": "https://www.yr.no/en/forecast/daily-table/2-5128581/United%20States/New%20York/New%20York",
       "windy": "https://www.windy.com/40.755/-73.994",
       "nws": "https://forecast.weather.gov/MapClick.php?lat=40.7549&lon=-73.994"
     },
     "보스턴": {
-      "accu": "https://www.accuweather.com/en/us/boston/02108/daily-weather-forecast/348735",
       "yr": "https://www.yr.no/en/forecast/daily-table/2-4930956/United%20States/Massachusetts/Boston",
       "windy": "https://www.windy.com/42.355/-71.060",
       "nws": "https://forecast.weather.gov/MapClick.php?lat=42.3601&lon=-71.0589"
@@ -6771,12 +6802,12 @@ window.NYTICKETS = {"iter": 300000, "salt": "ZLXRKrvAX6q2QWU20saEDA==", "iv": "s
 })();
 </script>
 <script>
-/* 여행 9일 날씨 — 4곳 비교 + 종합
- * - NWS (미국 국립기상청 · api.weather.gov · 약 7일)
- * - Windy (기본 모델 ECMWF · Open-Meteo 로 같은 모델 값 · 약 15일)
- * - Yr (노르웨이 기상청 · api.met.no · 약 9일)
- * - AccuWeather: 무료 공개 API 가 없어(키 필요) 화면에서 바로가기 링크로 제공
- * 종합 = 받아온 예보들의 평균 (최고·최저 평균, 강수확률은 가장 높은 값)
+/* 여행 9일 날씨 — 공개 API 있는 3곳 비교 + 종합 (날짜별 + 시간별)
+ * - NWS (미국 국립기상청 · api.weather.gov · 약 7일, 시간별 = forecastHourly)
+ * - Windy (기본 모델 ECMWF · Open-Meteo 로 같은 모델 값 · 약 15일, 시간별)
+ * - Yr (노르웨이 기상청 · api.met.no · 약 9일, 앞 2~3일은 1시간·그 뒤는 6시간 간격)
+ * (API 없는 곳은 넣지 않음)
+ * 종합 = 받아온 예보들의 평균 (일별 강수확률은 가장 높은 값, 시간별은 평균)
  * 예보 범위 밖인 날은 최근 5년(2021~2025) 같은 날짜 평균(평년 참고)
  * 도시별로 따로 부름 (뉴욕 / 보스턴) · localStorage 3시간 캐시
  */
@@ -6784,13 +6815,19 @@ window.NYTICKETS = {"iter": 300000, "salt": "ZLXRKrvAX6q2QWU20saEDA==", "iv": "s
   "use strict";
 
   var TRIP = window.TRIP;
-  var CACHE_KEY = "nyc-trip-weather-v2";
+  var CACHE_KEY = "nyc-trip-weather-v3";
   var TTL = 3 * 3600e3;
   var NORMAL_YEARS = [2021, 2022, 2023, 2024, 2025];
   var RAIN_MM = 1;
 
   var listeners = [];
-  var state = { status: "idle", days: {}, src: {}, updated: null, error: null };
+  var state = { status: "idle", days: {}, src: {}, hourly: {}, updated: null, error: null };
+  // 시간별 칸: hourly[date][h][kind] = {t, pop, rain, code|text|sym}
+  function hslot(H, date, h, kind) {
+    var d = H[date] || (H[date] = {});
+    var s = d[h] || (d[h] = {});
+    return s[kind] || (s[kind] = {});
+  }
 
   function readCache() {
     try {
@@ -6836,9 +6873,10 @@ window.NYTICKETS = {"iter": 300000, "salt": "ZLXRKrvAX6q2QWU20saEDA==", "iv": "s
   function loadOM(g) {
     var url = "https://api.open-meteo.com/v1/forecast?latitude=" + g.lat + "&longitude=" + g.lon +
       "&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,precipitation_sum,wind_speed_10m_max" +
+      "&hourly=temperature_2m,precipitation_probability,precipitation,weather_code" +
       "&models=best_match,ecmwf_ifs025&timezone=America%2FNew_York&forecast_days=16";
     return getJSON(url).then(function (j) {
-      var d = j.daily, best = {}, ec = {};
+      var d = j.daily, best = {}, ec = {}, H = {};
       d.time.forEach(function (t, i) {
         var pick = function (k, m) { var v = d[k + "_" + m]; return v ? v[i] : null; };
         best[t] = { code: pick("weather_code", "best_match"), max: pick("temperature_2m_max", "best_match"), min: pick("temperature_2m_min", "best_match"),
@@ -6847,15 +6885,39 @@ window.NYTICKETS = {"iter": 300000, "salt": "ZLXRKrvAX6q2QWU20saEDA==", "iv": "s
           ec[t] = { code: pick("weather_code", "ecmwf_ifs025"), max: pick("temperature_2m_max", "ecmwf_ifs025"), min: pick("temperature_2m_min", "ecmwf_ifs025"),
             pop: null, rain: pick("precipitation_sum", "ecmwf_ifs025"), wind: pick("wind_speed_10m_max", "ecmwf_ifs025") };
       });
-      return { best: best, windy: ec };
+      var hr = j.hourly;
+      if (hr && hr.time) hr.time.forEach(function (t, i) {
+        var date = t.slice(0, 10), h = parseInt(t.slice(11, 13), 10);
+        var pick = function (k, m) { var v = hr[k + "_" + m]; return v ? v[i] : null; };
+        ["best_match", "ecmwf_ifs025"].forEach(function (m) {
+          if (pick("temperature_2m", m) == null) return;
+          var o = hslot(H, date, h, m === "best_match" ? "best" : "windy");
+          o.t = pick("temperature_2m", m); o.pop = pick("precipitation_probability", m);
+          o.rain = pick("precipitation", m); o.code = pick("weather_code", m);
+        });
+      });
+      // ECMWF 일별 강수확률 = 그날 시간별 최댓값
+      Object.keys(ec).forEach(function (date) {
+        var hs = H[date]; if (!hs) return;
+        var p = Object.keys(hs).map(function (h) { return hs[h].windy && hs[h].windy.pop; }).filter(function (x) { return x != null; });
+        if (p.length) ec[date].pop = Math.max.apply(null, p);
+      });
+      return { best: best, windy: ec, hourly: H };
     });
   }
   // NWS: 낮(최고)·밤(최저) 예보, °F → °C
   function loadNWS(g) {
     return getJSON("https://api.weather.gov/points/" + g.lat.toFixed(4) + "," + g.lon.toFixed(4)).then(function (p) {
-      return getJSON(p.properties.forecast);
-    }).then(function (f) {
-      var out = {};
+      return Promise.all([getJSON(p.properties.forecast), settle(getJSON(p.properties.forecastHourly))]);
+    }).then(function (both) {
+      var f = both[0], fh = both[1], out = {}, H = {};
+      if (fh && fh.properties) fh.properties.periods.forEach(function (p) {
+        var o = hslot(H, p.startTime.slice(0, 10), parseInt(p.startTime.slice(11, 13), 10), "nws");
+        o.t = p.temperatureUnit === "F" ? f2c(p.temperature) : p.temperature;
+        o.pop = p.probabilityOfPrecipitation ? p.probabilityOfPrecipitation.value : null;
+        o.text = p.shortForecast;
+      });
+      out._hourly = H;
       f.properties.periods.forEach(function (p) {
         var date = p.startTime.slice(0, 10);
         var o = out[date] || (out[date] = { max: null, min: null, pop: null, wind: null, text: null });
@@ -6873,8 +6935,26 @@ window.NYTICKETS = {"iter": 300000, "salt": "ZLXRKrvAX6q2QWU20saEDA==", "iv": "s
   // Yr (MET Norway): 시간별 → 날짜별
   function loadYr(g) {
     return getJSON("https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=" + g.lat.toFixed(4) + "&lon=" + g.lon.toFixed(4)).then(function (j) {
-      var out = {};
-      j.properties.timeseries.forEach(function (s) {
+      var out = {}, H = {}, ts = j.properties.timeseries;
+      // 시간별: 1시간 간격은 그대로, 6시간 간격 구간은 기온은 사이를 이어 주고 비는 6으로 나눠 채움
+      ts.forEach(function (s, i) {
+        var t0 = Date.parse(s.time), next = ts[i + 1], t1 = next ? Date.parse(next.time) : t0 + 3600e3;
+        var steps = Math.max(1, Math.min(6, Math.round((t1 - t0) / 3600e3)));
+        var a = s.data.instant.details.air_temperature, b = next ? next.data.instant.details.air_temperature : a;
+        var n1 = s.data.next_1_hours, n6 = s.data.next_6_hours;
+        var blk = steps === 1 ? (n1 || n6) : (n6 || n1);
+        var amt = blk && blk.details ? blk.details.precipitation_amount : null;
+        var per = amt == null ? null : (steps === 1 && n1 ? amt : amt / (blk === n6 ? 6 : 1));
+        for (var k = 0; k < steps; k++) {
+          var d0 = new Date(t0 + k * 3600e3);
+          var o = hslot(H, nyDate(d0), nyHour(d0), "yr");
+          o.t = a + (b - a) * k / steps;
+          o.rain = per == null ? null : Math.round(per * 10) / 10;
+          o.sym = blk && blk.summary ? blk.summary.symbol_code : null;
+          o.pop = null;
+        }
+      });
+      ts.forEach(function (s) {
         var d = new Date(s.time), date = nyDate(d), h = nyHour(d);
         var o = out[date] || (out[date] = { t: [], rain: 0, wind: [], sym: null, symH: 99 });
         o.t.push(s.data.instant.details.air_temperature);
@@ -6891,6 +6971,7 @@ window.NYTICKETS = {"iter": 300000, "salt": "ZLXRKrvAX6q2QWU20saEDA==", "iv": "s
         if (o.t.length < 4) return; // 하루치가 너무 적으면 건너뜀
         res[date] = { max: Math.max.apply(null, o.t), min: Math.min.apply(null, o.t), rain: Math.round(o.rain * 10) / 10, wind: Math.max.apply(null, o.wind), sym: o.sym };
       });
+      res._hourly = H;
       return res;
     });
   }
@@ -6920,7 +7001,28 @@ window.NYTICKETS = {"iter": 300000, "salt": "ZLXRKrvAX6q2QWU20saEDA==", "iv": "s
   function loadGroup(g) {
     return Promise.all([settle(loadOM(g)), settle(loadNWS(g)), settle(loadYr(g))]).then(function (r) {
       var om = r[0] || { best: {}, windy: {} }, nws = r[1] || {}, yr = r[2] || {};
-      var days = {}, src = {};
+      var days = {}, src = {}, hourly = {};
+      g.days.forEach(function (date) {
+        var parts = [om.hourly, nws._hourly, yr._hourly].map(function (H) { return (H && H[date]) || {}; });
+        var rows = [];
+        for (var h = 0; h < 24; h++) {
+          var row = { h: h };
+          parts.forEach(function (P) { if (P[h]) Object.assign(row, P[h]); });
+          var b = row.best, w = row.windy, n = row.nws, y = row.yr;
+          if (!b && !w && !n && !y) continue;
+          var t = avg([w && w.t, n && n.t, y && y.t]);
+          var pop = avg([w && w.pop, n && n.pop]);
+          var rain = avg([w && w.rain, y && y.rain]);
+          row.comp = {
+            t: t != null ? t : b && b.t,
+            pop: pop != null ? Math.round(pop) : b && b.pop,
+            rain: rain != null ? rain : b && b.rain,
+            code: b && b.code != null ? b.code : w ? w.code : null,
+          };
+          rows.push(row);
+        }
+        if (rows.length) hourly[date] = rows;
+      });
       g.days.forEach(function (date) {
         var b = om.best[date], w = om.windy[date], n = nws[date], y = yr[date];
         src[date] = { nws: n || null, windy: w || null, yr: y || null, ok: { nws: !!r[1], windy: !!r[0], yr: !!r[2] } };
@@ -6931,16 +7033,16 @@ window.NYTICKETS = {"iter": 300000, "salt": "ZLXRKrvAX6q2QWU20saEDA==", "iv": "s
           code: b ? b.code : w ? w.code : null,
           max: avg([w && w.max, n && n.max, y && y.max, !w && !n && !y && b ? b.max : null]),
           min: avg([w && w.min, n && n.min, y && y.min, !w && !n && !y && b ? b.min : null]),
-          pop: Math.max(b && b.pop || 0, n && n.pop || 0),
+          pop: Math.max(b && b.pop || 0, n && n.pop || 0, w && w.pop || 0),
           rain: avg([w && w.rain, y && y.rain, b && b.rain]),
           wind: avg([w && w.wind, n && n.wind, y && y.wind]),
           count: [w, n, y].filter(function (x) { return x && x.max != null; }).length,
         };
       });
       var need = g.days.filter(function (d) { return !days[d]; });
-      if (!need.length) return { days: days, src: src };
-      return loadNormals(g, need).then(function (nOut) { return { days: Object.assign({}, nOut, days), src: src }; },
-        function () { return { days: days, src: src }; });
+      if (!need.length) return { days: days, src: src, hourly: hourly };
+      return loadNormals(g, need).then(function (nOut) { return { days: Object.assign({}, nOut, days), src: src, hourly: hourly }; },
+        function () { return { days: days, src: src, hourly: hourly }; });
     });
   }
 
@@ -6949,18 +7051,18 @@ window.NYTICKETS = {"iter": 300000, "salt": "ZLXRKrvAX6q2QWU20saEDA==", "iv": "s
   function load(force) {
     if (!force) {
       var c = readCache();
-      if (c) { state = { status: "ok", days: c.days, src: c.src || {}, updated: c.at, error: null }; emit(); return Promise.resolve(state); }
+      if (c) { state = { status: "ok", days: c.days, src: c.src || {}, hourly: c.hourly || {}, updated: c.at, error: null }; emit(); return Promise.resolve(state); }
     }
     if (state.status === "loading") return Promise.resolve(state);
     state = Object.assign({}, state, { status: "loading", error: null });
     emit();
     return Promise.all(groups().map(loadGroup)).then(function (parts) {
-      var days = {}, src = {};
-      parts.forEach(function (p) { Object.assign(days, p.days); Object.assign(src, p.src); });
+      var days = {}, src = {}, hourly = {};
+      parts.forEach(function (p) { Object.assign(days, p.days); Object.assign(src, p.src); Object.assign(hourly, p.hourly); });
       var complete = TRIP.weatherDays.every(function (w) { return days[w.date]; });
       var at = Date.now();
-      if (complete) writeCache({ at: at, days: days, src: src });
-      state = { status: complete ? "ok" : "error", days: days, src: src, updated: at, error: complete ? null : "일부 날짜를 불러오지 못했어요" };
+      if (complete) writeCache({ at: at, days: days, src: src, hourly: hourly });
+      state = { status: complete ? "ok" : "error", days: days, src: src, hourly: hourly, updated: at, error: complete ? null : "일부 날짜를 불러오지 못했어요" };
       emit();
       return state;
     }).catch(function (e) {
@@ -7028,6 +7130,24 @@ window.NYTICKETS = {"iter": 300000, "salt": "ZLXRKrvAX6q2QWU20saEDA==", "iv": "s
       describe(code)[1] + '">' + ICONS[t] + "<\/svg>";
   }
 
+  ICONS.moon = '<g class="wx-icon-moon"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z" fill="currentColor" fill-opacity=".85"/><\/g>';
+  var LABEL2TYPE = { "맑음": "sun", "대체로 맑음": "sun", "구름 조금": "partly", "구름 많음": "cloud", "흐림": "cloud", "안개": "fog",
+    "이슬비": "rain", "약한 비": "rain", "비": "rain", "강한 비": "rain", "진눈깨비": "snow", "눈": "snow", "뇌우": "storm" };
+  // 출처별 시간 값 → [아이콘 종류, 한국어]. 밤(18~05시) 맑음은 달
+  function iconType(kind, v, h) {
+    if (!v) return null;
+    var label = kind === "nws" ? nwsKo(v.text) : kind === "yr" ? yrKo(v.sym) : v.code == null ? null : describe(v.code)[1];
+    if (!label || label === "—") return null;
+    var t = kind === "nws" || kind === "yr" ? (LABEL2TYPE[label] || "cloud") : describe(v.code)[0];
+    if (t === "sun" && h != null && (h < 6 || h >= 18)) t = "moon";
+    return [t, label];
+  }
+  function iconByType(t, label) {
+    if (!t || !ICONS[t]) return "";
+    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="' +
+      (label || "") + '">' + ICONS[t] + "<\/svg>";
+  }
+
   // 체감온도 (바람, °C · km/h)
   function feels(t, wind) {
     if (t == null) return null;
@@ -7057,6 +7177,9 @@ window.NYTICKETS = {"iter": 300000, "salt": "ZLXRKrvAX6q2QWU20saEDA==", "iv": "s
     get state() { return state; },
     forDate: function (date) { return state.days[date] || null; },
     sources: function (date) { return (state.src && state.src[date]) || null; },
+    hourly: function (date) { return (state.hourly && state.hourly[date]) || null; },
+    nyDate: function () { return nyDate(new Date()); }, nyHour: function () { return nyHour(new Date()); },
+    iconType: iconType, iconByType: iconByType,
     subscribe: function (fn) { listeners.push(fn); },
     describe: describe, iconSvg: iconSvg, nwsKo: nwsKo, yrKo: yrKo, outfit: outfit,
     wear: function (d) { var o = outfit(d); return o ? o.main.replace(/^\S+\s/, "") : ""; },
@@ -7883,9 +8006,42 @@ window.NYTICKETS = {"iter": 300000, "salt": "ZLXRKrvAX6q2QWU20saEDA==", "iv": "s
     return '<ul class="srcs">' +
       row("NWS", "미국 국립기상청", n, L.nws) +
       row("Windy", "ECMWF 모델", wd, L.windy) +
-      row("Yr", "노르웨이 기상청", y, L.yr) +
-      '<li class="src"><span class="sn">AccuWeather<span class="ss">아큐웨더<\/span><\/span><span class="sv small muted">공개 API가 없어 바로가기만<\/span>' +
-      (L.accu ? '<a class="small" href="' + esc(L.accu) + '" target="_blank" rel="noopener">보기<\/a>' : "") + "<\/li><\/ul>";
+      row("Yr", "노르웨이 기상청", y, L.yr) + "<\/ul>";
+  }
+  // 시간별 날씨 표 (비 확률 · 강수량 · 기온 · 날씨 탭)
+  var wxMetric = "pop";
+  var WX_METRICS = [["pop", "☔ 비 확률"], ["rain", "💧 강수량"], ["t", "🌡️ 기온"], ["sky", "⛅ 날씨"]];
+  function wxCell(kind, v, h) {
+    var pop = v && v.pop != null ? Math.round(v.pop) : null;
+    var rain = v && v.rain != null ? v.rain : null;
+    var shade = function (a) { return a > 0 ? ' style="background:rgba(47,128,201,' + Math.min(a, 0.5).toFixed(2) + ')"' : ""; };
+    var it = kind === "comp" ? (v && v.code != null ? W.iconType("best", v, h) : null) : W.iconType(kind, v, h);
+    return "<td>" +
+      '<span class="v v-pop"' + (pop != null ? shade(pop / 100 * 0.5) : "") + ">" + (pop == null ? "–" : pop) + "<\/span>" +
+      '<span class="v v-rain"' + (rain != null ? shade(rain / 4 * 0.5) : "") + ">" + (rain == null ? "–" : rain < 0.05 ? "0" : rain.toFixed(1)) + "<\/span>" +
+      '<span class="v v-t">' + (v && v.t != null ? Math.round(v.t) + "°" : "–") + "<\/span>" +
+      '<span class="v v-sky">' + (it ? W.iconByType(it[0], it[1]) + "<small>" + esc(it[1]) + "<\/small>" : "–") + "<\/span><\/td>";
+  }
+  function wxHourly(w) {
+    var rows = W.hourly(w.date);
+    if (!rows || !rows.length) return '<p class="small muted">시간별 예보는 여행일 약 15일 전부터 나와요 (지금은 평년 참고만)<\/p>';
+    var today = W.nyDate(), nowH = W.nyHour(), isToday = w.date === today;
+    if (isToday) rows = rows.filter(function (r) { return r.h >= nowH; });
+    if (!rows.length) return '<p class="small muted">오늘 남은 시간 예보가 없어요<\/p>';
+    var tabs = '<div class="wx-mtabs" role="group" aria-label="시간별 항목">' + WX_METRICS.map(function (m) {
+      return '<button type="button" class="wxm" data-wx-metric="' + m[0] + '" aria-pressed="' + (wxMetric === m[0]) + '">' + m[1] + "<\/button>";
+    }).join("") + "<\/div>";
+    var body = rows.map(function (r) {
+      var now = isToday && r.h === nowH;
+      return '<tr' + (now ? ' class="now"' : "") + '><th scope="row">' + (now ? "지금" : r.h + "시") + "<\/th>" +
+        wxCell("comp", r.comp, r.h).replace("<td>", '<td class="comp">') + wxCell("nws", r.nws, r.h) + wxCell("windy", r.windy, r.h) + wxCell("yr", r.yr, r.h) + "<\/tr>";
+    }).join("");
+    return '<div class="wx-hr m-' + wxMetric + '">' + tabs +
+      '<div class="wx-hr-scroll"><table><thead><tr><th scope="col">시각<\/th><th scope="col">종합<\/th><th scope="col">NWS<small>미국<\/small><\/th>' +
+      '<th scope="col">Windy<small>ECMWF<\/small><\/th><th scope="col">Yr<small>노르웨이<\/small><\/th><\/tr><\/thead><tbody>' + body + "<\/tbody><\/table><\/div>" +
+      '<p class="small muted wx-hr-note"><span class="v v-pop">비 확률 % · 종합 = NWS·Windy 평균 · Yr는 비 확률을 주지 않아요<\/span>' +
+      '<span class="v v-rain">1시간 강수량 mm · NWS는 강수량을 주지 않아요 · Yr 3일 뒤부터는 6시간 예보를 나눈 값<\/span>' +
+      '<span class="v v-t">기온 °C · 종합 = 3곳 평균<\/span><span class="v v-sky">종합 아이콘 = 기본 모델(Open-Meteo)<\/span><\/p><\/div>';
   }
   function wxCard(w) {
     var st = W.state;
@@ -7913,7 +8069,8 @@ window.NYTICKETS = {"iter": 300000, "salt": "ZLXRKrvAX6q2QWU20saEDA==", "iv": "s
       '<div class="desc">' + (d.src === "forecast" ? esc(desc[1]) : "최근 5년 평균") + '<\/div><div class="rain">' + rain + wind +
       (o && o.feelsLo != null && d.wind ? " · 아침 체감 " + Math.round(o.feelsLo) + "°" : "") + "<\/div><\/div>" +
       wearBox +
-      fold("예보 4곳 비교 (NWS · Windy · Yr · AccuWeather)", wxSources(w), { cls: "fold-src" }) + "<\/article>";
+      fold("⏱️ 시간별 날씨", wxHourly(w), { cls: "fold-src fold-hr", hint: "비 확률 · 강수량 · 기온" }) +
+      fold("예보 3곳 비교 (NWS · Windy · Yr)", wxSources(w), { cls: "fold-src" }) + "<\/article>";
   }
   function renderWeather() {
     var st = W.state;
@@ -7924,7 +8081,7 @@ window.NYTICKETS = {"iter": 300000, "salt": "ZLXRKrvAX6q2QWU20saEDA==", "iv": "s
       ? '<div class="card wx-alert" role="alert"><p>날씨를 불러오지 못했어요<\/p><button type="button" class="btn small" data-wx-retry>' + svg("refresh") + "다시 시도<\/button><\/div>"
       : "";
     return '<div class="wrap page">' + pageTitle("여행 날씨", "WEATHER") +
-      '<p class="small muted" style="margin:-6px 0 10px">미국 국립기상청 · Windy · 노르웨이 기상청(Yr) · AccuWeather 4곳을 비교하고, 종합해서 옷차림까지<\/p>' +
+      '<p class="small muted" style="margin:-6px 0 10px">미국 국립기상청 · Windy · 노르웨이 기상청(Yr) 3곳을 비교하고, 종합해서 옷차림까지 · 날짜마다 <b>시간별 날씨<\/b>를 펼쳐 볼 수 있어요<\/p>' +
       '<div class="wx-top"><span class="upd">마지막 업데이트 ' + esc(upd) + (st.status === "loading" ? " · 불러오는 중…" : "") + "<\/span>" +
       '<button type="button" class="btn ghost small" data-wx-retry>' + svg("refresh") + "새로고침<\/button><\/div>" +
       alert +
@@ -7933,7 +8090,7 @@ window.NYTICKETS = {"iter": 300000, "salt": "ZLXRKrvAX6q2QWU20saEDA==", "iv": "s
           (firstFc.getUTCMonth() + 1) + "/" + firstFc.getUTCDate() + "쯤부터 실제 예보로 바뀌어요.<\/p>"
         : "") +
       '<div class="wx-grid">' + T.weatherDays.map(wxCard).join("") + "<\/div>" +
-      '<p class="small muted" style="margin-top:12px">기온 °C · 종합 = NWS · Windy(ECMWF) · Yr 평균 (강수확률은 가장 높은 값) · 예보 범위: NWS 약 7일, Yr 약 9일, Windy 약 15일 · 보스턴 가는 날(11/18)은 보스턴 날씨 · AccuWeather는 무료 공개 API가 없어 바로가기 링크<\/p><\/div>';
+      '<p class="small muted" style="margin-top:12px">기온 °C · 종합 = NWS · Windy(ECMWF) · Yr 평균 (강수확률은 가장 높은 값) · 예보 범위: NWS 약 7일, Yr 약 9일, Windy 약 15일 · 보스턴 가는 날(11/18)은 보스턴 날씨 · 공개 API가 있는 곳만 씀<\/p><\/div>';
   }
 
   // =====================================================================
@@ -8007,7 +8164,7 @@ window.NYTICKETS = {"iter": 300000, "salt": "ZLXRKrvAX6q2QWU20saEDA==", "iv": "s
   });
 
   view.addEventListener("click", function (e) {
-    var t = e.target.closest("[data-food-day],[data-food-kind],[data-food-tier],[data-place-type],[data-reveal],[data-wx-retry],[data-focus],[data-map-cat],[data-go-focus]");
+    var t = e.target.closest("[data-food-day],[data-food-kind],[data-food-tier],[data-place-type],[data-reveal],[data-wx-retry],[data-wx-metric],[data-focus],[data-map-cat],[data-go-focus]");
     if (!t) return;
     if (t.dataset.focus) { e.preventDefault(); focusPoint(t.dataset.focus); return; }
     if (t.dataset.goFocus) { store.set("nyc-map-focus", t.dataset.goFocus); return; }
@@ -8022,6 +8179,12 @@ window.NYTICKETS = {"iter": 300000, "salt": "ZLXRKrvAX6q2QWU20saEDA==", "iv": "s
     if (t.dataset.foodTier) { foodTier = t.dataset.foodTier; render(); return; }
     if (t.dataset.placeType) { placeType = t.dataset.placeType; render(); return; }
     if (t.hasAttribute("data-wx-retry")) { W.load(true); return; }
+    if (t.dataset.wxMetric) {
+      wxMetric = t.dataset.wxMetric;
+      view.querySelectorAll(".wx-hr").forEach(function (el) { el.className = "wx-hr m-" + wxMetric; });
+      view.querySelectorAll("[data-wx-metric]").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.wxMetric === wxMetric)); });
+      return;
+    }
     if (t.hasAttribute("data-reveal")) {
       var code = t.previousElementSibling;
       var open = t.getAttribute("aria-pressed") !== "true";
